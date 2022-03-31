@@ -87,6 +87,7 @@ public class JdbcBridgeVerticle extends AbstractVerticle implements ExtensionMan
             .valueOf(Utils.getConfiguration("false", "SERIAL_MODE", "jdbc-bridge.serial.mode"));
 
     private static final int DEFAULT_SERVER_PORT = 9019;
+    private static final String DEFAULT_SERVER_HOST = "127.0.0.1";
 
     private static final String RESPONSE_CONTENT_TYPE = "application/octet-stream";
 
@@ -273,9 +274,10 @@ public class JdbcBridgeVerticle extends AbstractVerticle implements ExtensionMan
 
         log.info("Starting web server...");
         int port = bridgeServerConfig.getInteger("serverPort", DEFAULT_SERVER_PORT);
-        server.requestHandler(router).listen(port, action -> {
+        String host = bridgeServerConfig.getString("serverHost", DEFAULT_SERVER_HOST);
+        server.requestHandler(router).listen(port, host, action -> {
             if (action.succeeded()) {
-                log.info("Server http://0.0.0.0:{} started in {} ms", port, System.currentTimeMillis() - startTime);
+                log.info("Server http://{}:{} started in {} ms", host, port, System.currentTimeMillis() - startTime);
             } else {
                 log.error("Failed to start server", action.cause());
             }
